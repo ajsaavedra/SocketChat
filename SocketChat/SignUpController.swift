@@ -54,5 +54,15 @@ class SignUpController: UIViewController, UITextFieldDelegate {
         userName.delegate = self
         password.delegate = self
         passwordConfirmation.delegate = self
+        setAppIcon()
+    }
+    
+    func setAppIcon() {
+        let imageName = "logo.png"
+        let image = UIImage(named: imageName)
+        let imageView = UIImageView(image: image!)
+        imageView.frame = CGRect(x: self.view.bounds.size.width/2 - image!.size.width/2,
+                                 y: 0, width: image!.size.width, height: image!.size.height)
+        view.addSubview(imageView)
     }
 }

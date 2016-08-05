@@ -57,6 +57,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
         
         userName.delegate = self
         password.delegate = self
+        setAppIcon()
     }
 
     override func didReceiveMemoryWarning() {
@@ -66,5 +67,14 @@ class LoginController: UIViewController, UITextFieldDelegate {
     func textFieldShouldReturn(textfield: UITextField) -> Bool {
         textfield.resignFirstResponder()
         return true
+    }
+    
+    func setAppIcon() {
+        let imageName = "logo.png"
+        let image = UIImage(named: imageName)
+        let imageView = UIImageView(image: image!)
+        imageView.frame = CGRect(x: self.view.bounds.size.width/2 - image!.size.width/2,
+                                 y: 0, width: image!.size.width, height: image!.size.height)
+        view.addSubview(imageView)
     }
 }
