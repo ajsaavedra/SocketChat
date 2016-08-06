@@ -2,6 +2,7 @@ import UIKit
 
 class ViewController: UITableViewController {
 
+    var user: String!
     @IBOutlet weak var welcomeLabel: UILabel!
 
     @IBAction func logoutUser(sender: UIBarButtonItem) {
@@ -18,7 +19,11 @@ class ViewController: UITableViewController {
     }
 
     override func viewDidAppear(animated: Bool) {
-        self.performSegueWithIdentifier("GotoLogin", sender: self)
+//        if user != nil {
+//            self.performSegueWithIdentifier("GotoLogin", sender: self)
+//        } else {
+//            
+//        }
     }
 }
 

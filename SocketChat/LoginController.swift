@@ -2,6 +2,7 @@ import UIKit
 
 class LoginController: UIViewController, UITextFieldDelegate {
 
+    var userData: NSDictionary?
     @IBOutlet weak var userName: UITextField!
     @IBOutlet weak var password: UITextField!
 
@@ -16,13 +17,15 @@ class LoginController: UIViewController, UITextFieldDelegate {
         if name.isEmpty || pw.isEmpty {
             displayAlertMessage("All fields are required.")
             return
-        } else if userDoesNotExist() {
-            displayAlertMessage("Invalid User");
-        } else if isIncorrectPassword() {
-            displayAlertMessage("Incorrect password");
-        } else {
-            loginUser()
-            return
+        }
+
+        SocketChatAPI().makeCall(userName.text!, password: password.text!) { responseObject, error in
+            let data = responseObject!
+            if data["Error"] != nil {
+                self.setupAlertMessage(data)
+            } else {
+                self.loginUser()
+            }
         }
     }
 
@@ -30,6 +33,20 @@ class LoginController: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func forgotPassword(sender: UIButton) {
+    }
+    
+    func setupAlertMessage(data: NSDictionary) {
+        var message = "";
+        switch (data["Error"] as! String) {
+        case "User not found":
+            message = "Invalid User"
+        case "Invalid password":
+            message = "Incorrect password"
+        default:
+            message = "Unknown error occurred"
+        }
+        
+        displayAlertMessage(message)
     }
     
     func displayAlertMessage(message: String) {
@@ -40,16 +57,8 @@ class LoginController: UIViewController, UITextFieldDelegate {
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
-    func userDoesNotExist() -> Bool {
-        return false
-    }
-    
-    func isIncorrectPassword() -> Bool {
-        return false
-    }
-    
     func loginUser() {
-        
+        self.dismissViewControllerAnimated(true, completion: nil)
     }
 
     override func viewDidLoad() {
