@@ -9,20 +9,20 @@ class LoginController: UIViewController, UITextFieldDelegate {
     @IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
         view.endEditing(true)
     }
-    
+
     @IBAction func loginButton(sender: UIButton) {
         let name = userName.text!
         let pw = password.text!
-        
+
         if name.isEmpty || pw.isEmpty {
             displayAlertMessage("All fields are required.")
             return
         }
 
-        SocketChatAPI().makeCall(userName.text!, password: password.text!) { responseObject, error in
+        SocketChatAPI().makeCall(name, password: pw) { responseObject, error in
             let data = responseObject!
             if data["Error"] != nil {
-                self.setupAlertMessage(data)
+                self.displayAlertMessage(data["Error"] as! String)
             } else {
                 self.loginUser()
             }
@@ -34,36 +34,22 @@ class LoginController: UIViewController, UITextFieldDelegate {
 
     @IBAction func forgotPassword(sender: UIButton) {
     }
-    
-    func setupAlertMessage(data: NSDictionary) {
-        var message = "";
-        switch (data["Error"] as! String) {
-        case "User not found":
-            message = "Invalid User"
-        case "Invalid password":
-            message = "Incorrect password"
-        default:
-            message = "Unknown error occurred"
-        }
-        
-        displayAlertMessage(message)
-    }
-    
+
     func displayAlertMessage(message: String) {
-        let alertController = UIAlertController(title: "Alert", message: message,
+        let alertController = UIAlertController(title: "Oops!", message: message,
                                                 preferredStyle: UIAlertControllerStyle.Alert)
         let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
         alertController.addAction(okAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
-    
+
     func loginUser() {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         userName.delegate = self
         password.delegate = self
         setAppIcon()
@@ -72,12 +58,12 @@ class LoginController: UIViewController, UITextFieldDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-    
+
     func textFieldShouldReturn(textfield: UITextField) -> Bool {
         textfield.resignFirstResponder()
         return true
     }
-    
+
     func setAppIcon() {
         let imageName = "logo.png"
         let image = UIImage(named: imageName)

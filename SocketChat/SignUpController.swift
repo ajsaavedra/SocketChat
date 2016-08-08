@@ -9,7 +9,7 @@ class SignUpController: UIViewController, UITextFieldDelegate {
     @IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
         view.endEditing(true)
     }
-    
+
     @IBAction func signUp(sender: UIButton) {
         let name = userName.text!
         let pw = password.text!
@@ -21,42 +21,44 @@ class SignUpController: UIViewController, UITextFieldDelegate {
         } else if pw != pwc {
             displayAlertMessage("Passwords do not match.")
             return
-        } else {
-            registerUser()
-            return
+        }
+
+        SocketChatAPI().makeCallToRegister(name, password: pw, confirmation: pwc) { responseObject, error in
+            let data = responseObject!
+            if data["Error"] != nil {
+                self.displayAlertMessage(data["Error"] as! String)
+            } else {
+                self.dismissViewControllerAnimated(true, completion: nil)
+            }
         }
     }
 
     func displayAlertMessage(message: String) {
-        let alertController = UIAlertController(title: "Alert", message: message,
+        let alertController = UIAlertController(title: "Oops!", message: message,
                                                 preferredStyle: UIAlertControllerStyle.Alert)
         let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
         alertController.addAction(okAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
 
-    func registerUser() {
-        
-    }
-
     @IBAction func dismissView(sender: UIButton) {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
-    
+
     func textFieldShouldReturn(textfield: UITextField) -> Bool {
         textfield.resignFirstResponder()
         return true
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         userName.delegate = self
         password.delegate = self
         passwordConfirmation.delegate = self
         setAppIcon()
     }
-    
+
     func setAppIcon() {
         let imageName = "logo.png"
         let image = UIImage(named: imageName)

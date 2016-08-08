@@ -19,11 +19,11 @@ class ViewController: UITableViewController {
     }
 
     override func viewDidAppear(animated: Bool) {
-//        if user != nil {
-//            self.performSegueWithIdentifier("GotoLogin", sender: self)
-//        } else {
-//            
-//        }
+        if user != nil {
+            self.performSegueWithIdentifier("GotoLogin", sender: self)
+        } else {
+            
+        }
     }
 }
 
