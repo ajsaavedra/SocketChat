@@ -47,7 +47,6 @@
                                 </state>
                                 <connections>
                                     <action selector="loginButton:" destination="WHQ-iq-WzF" eventType="touchUpInside" id="C2s-eX-xX6"/>
-                                    <segue destination="RSH-NT-Cej" kind="unwind" unwindAction="unwindToViewController:" id="VEp-k4-05L"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bcb-Ae-v6I">
@@ -130,7 +129,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9jN-Ms-HSw" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <exit id="RSH-NT-Cej" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="Oat-PP-93U">
                     <connections>
                         <action selector="backgroundTapped:" destination="WHQ-iq-WzF" id="sWH-RK-MC0"/>
@@ -153,7 +151,7 @@
                                 <rect key="frame" x="0.0" y="92" width="600" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="H4R-2J-YIb" id="B2N-gZ-Lcd">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="1" green="0.92941176469999998" blue="0.82352941180000006" alpha="1" colorSpace="calibratedRGB"/>

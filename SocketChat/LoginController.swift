@@ -4,6 +4,9 @@ class LoginController: UIViewController, UITextFieldDelegate {
 
     var user: User?
     var userData: NSDictionary?
+    var username: String?
+    var pw: String?
+
     @IBOutlet weak var userName: UITextField!
     @IBOutlet weak var password: UITextField!
     
@@ -12,21 +15,14 @@ class LoginController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func loginButton(sender: UIButton) {
-        let name = userName.text!
-        let pw = password.text!
+        username = userName.text!
+        pw = password.text!
         
-        if name.isEmpty || pw.isEmpty {
+        if username!.isEmpty || pw!.isEmpty {
             displayAlertMessage("All fields are required.")
             return
-        }
-        
-        SocketChatAPI().makeCall(name, password: pw) { responseObject, error in
-            let data = responseObject!
-            if data["Error"] != nil {
-                self.displayAlertMessage(data["Error"] as! String)
-            } else {
-                self.loginUser()
-            }
+        } else {
+            loginUser()
         }
     }
     
@@ -38,14 +34,28 @@ class LoginController: UIViewController, UITextFieldDelegate {
     
     func displayAlertMessage(message: String) {
         let alertController = UIAlertController(title: "Oops!", message: message,
-                                                preferredStyle: UIAlertControllerStyle.Alert)
+                                                preferredStyle: .Alert)
         let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
         alertController.addAction(okAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     func loginUser() {
-        self.dismissViewControllerAnimated(true, completion: nil)
+        SocketChatAPI().makeCall(userName.text!, password: self.pw!) { responseObject, error in
+            let userData = responseObject!
+            if userData["Error"] != nil {
+                self.displayAlertMessage(userData["Error"] as! String)
+            } else {
+                self.user = User()
+                self.user!.nameUser(self.userName.text!)
+
+                let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                appDelegate.viewController!.user = self.user!
+
+                SocketIOManager.sharedInstance.establishConnection()
+                self.dismissViewControllerAnimated(true, completion: nil)
+            }
+        }
     }
     
     override func viewDidLoad() {

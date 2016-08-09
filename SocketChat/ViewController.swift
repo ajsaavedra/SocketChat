@@ -33,26 +33,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             self.performSegueWithIdentifier("GotoLogin", sender: self)
         }
     }
-    
-    @IBAction func unwindToViewController(segue: UIStoryboardSegue) {
-        if let vc = segue.sourceViewController as? LoginController {
-            user = User()
-            user!.nameUser(vc.userName.text!)
-            getListOfUsers()
-        }
-    }
-    
+
     func getListOfUsers() {
         SocketIOManager.sharedInstance.connectToServerWithUsername(user!.username!,
             completionHandler: { (userList) -> Void in
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 if userList != nil {
-                    print("Here")
                     self.users = userList
                     self.userListTable.reloadData()
                     self.userListTable.hidden = false
                 }
-                    print("Rien")
             })
         })
     }
