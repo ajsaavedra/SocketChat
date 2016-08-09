@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  Feeder
+//  Socket Chat
 //
 //  Created by Tony Saavedra on 7/28/16.
 //  Copyright © 2016 Tony Saavedra. All rights reserved.

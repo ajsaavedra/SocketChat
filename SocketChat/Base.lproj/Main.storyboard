@@ -47,6 +47,7 @@
                                 </state>
                                 <connections>
                                     <action selector="loginButton:" destination="WHQ-iq-WzF" eventType="touchUpInside" id="C2s-eX-xX6"/>
+                                    <segue destination="RSH-NT-Cej" kind="unwind" unwindAction="unwindToViewController:" id="VEp-k4-05L"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bcb-Ae-v6I">
@@ -129,6 +130,7 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9jN-Ms-HSw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="RSH-NT-Cej" userLabel="Exit" sceneMemberID="exit"/>
                 <tapGestureRecognizer id="Oat-PP-93U">
                     <connections>
                         <action selector="backgroundTapped:" destination="WHQ-iq-WzF" id="sWH-RK-MC0"/>
@@ -172,11 +174,12 @@
                         <barButtonItem key="rightBarButtonItem" title="Chat" id="CZ8-uu-TV2">
                             <color key="tintColor" red="0.0" green="0.65490196079999996" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
                             <connections>
-                                <segue destination="rLL-Md-vuN" kind="show" id="mlt-L6-PBN"/>
+                                <segue destination="rLL-Md-vuN" kind="show" identifier="ChatRoom" id="mlt-L6-PBN"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="userListTable" destination="aiK-lV-nOT" id="Cy5-37-2e7"/>
                         <segue destination="WHQ-iq-WzF" kind="presentation" identifier="GotoLogin" id="a9d-pA-6hc"/>
                     </connections>
                 </tableViewController>
@@ -236,10 +239,6 @@
                                     <constraint firstItem="INc-Zc-8r4" firstAttribute="top" secondItem="4WT-8X-SwW" secondAttribute="top" constant="8" id="tlC-6L-uiN"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="f3b-G4-ML6">
-                                <rect key="frame" x="0.0" y="64" width="600" height="468"/>
-                                <color key="backgroundColor" red="1" green="0.92941176469999998" blue="0.82352941180000006" alpha="1" colorSpace="calibratedRGB"/>
-                            </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User has logged on" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4UZ-mu-RTV">
                                 <rect key="frame" x="0.0" y="64" width="600" height="23"/>
                                 <color key="backgroundColor" red="0.0" green="0.65490196079999996" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
@@ -247,6 +246,10 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="f3b-G4-ML6">
+                                <rect key="frame" x="0.0" y="64" width="600" height="468"/>
+                                <color key="backgroundColor" red="1" green="0.92941176469999998" blue="0.82352941180000006" alpha="1" colorSpace="calibratedRGB"/>
+                            </tableView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="0.92941176469999998" blue="0.82352941180000006" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -267,6 +270,7 @@
                     </view>
                     <connections>
                         <outlet property="chatTextfield" destination="INc-Zc-8r4" id="NDQ-MN-SxC"/>
+                        <outlet property="tableChatView" destination="f3b-G4-ML6" id="RTF-bg-Rjd"/>
                         <outlet property="userAlertLabel" destination="4UZ-mu-RTV" id="FnU-Tl-ppf"/>
                         <outlet property="userTypingLabel" destination="RE7-HX-OvZ" id="H9X-2a-di7"/>
                     </connections>

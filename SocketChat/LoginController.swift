@@ -2,23 +2,24 @@ import UIKit
 
 class LoginController: UIViewController, UITextFieldDelegate {
 
+    var user: User?
     var userData: NSDictionary?
     @IBOutlet weak var userName: UITextField!
     @IBOutlet weak var password: UITextField!
-
+    
     @IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
         view.endEditing(true)
     }
-
+    
     @IBAction func loginButton(sender: UIButton) {
         let name = userName.text!
         let pw = password.text!
-
+        
         if name.isEmpty || pw.isEmpty {
             displayAlertMessage("All fields are required.")
             return
         }
-
+        
         SocketChatAPI().makeCall(name, password: pw) { responseObject, error in
             let data = responseObject!
             if data["Error"] != nil {
@@ -28,13 +29,13 @@ class LoginController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-
+    
     @IBAction func loginWithTwitterButton(sender: UIButton) {
     }
-
+    
     @IBAction func forgotPassword(sender: UIButton) {
     }
-
+    
     func displayAlertMessage(message: String) {
         let alertController = UIAlertController(title: "Oops!", message: message,
                                                 preferredStyle: UIAlertControllerStyle.Alert)
@@ -42,28 +43,28 @@ class LoginController: UIViewController, UITextFieldDelegate {
         alertController.addAction(okAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
-
+    
     func loginUser() {
         self.dismissViewControllerAnimated(true, completion: nil)
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         userName.delegate = self
         password.delegate = self
         setAppIcon()
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
+    
     func textFieldShouldReturn(textfield: UITextField) -> Bool {
         textfield.resignFirstResponder()
         return true
     }
-
+    
     func setAppIcon() {
         let imageName = "logo.png"
         let image = UIImage(named: imageName)
