@@ -65,12 +65,19 @@ class SocketIOManager: NSObject {
     }
 
     func listenForOtherMessages() {
-        socket.on("userTypingUpdate") { (dataArray, socketAck) -> Void in
-            NSNotificationCenter.defaultCenter().postNotificationName("userTypingNotification", object: dataArray[0] as? [String: AnyObject])
+        socket.on("userTypingUpdate") { (data, socketAck) -> Void in
+            let usersTyping = data as NSArray
+            NSNotificationCenter.defaultCenter().postNotificationName("userTypingNotification", object: usersTyping[0] as? [String])
         }
     }
 
     func sendUserStartedTypingMessage(username: String) {
         socket.emit("startType", username)
+        listenForOtherMessages()
+    }
+    
+    func sendStopTypingMessage(username: String) {
+        socket.emit("stopType", username)
+        listenForOtherMessages()
     }
 }

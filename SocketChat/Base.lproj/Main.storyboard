@@ -292,6 +292,7 @@
                             </tableView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="0.92941176469999998" blue="0.82352941180000006" alpha="1" colorSpace="calibratedRGB"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="4UZ-mu-RTV" firstAttribute="top" secondItem="NWW-us-fNu" secondAttribute="topMargin" constant="64" id="18L-Am-GFE"/>
                             <constraint firstItem="4WT-8X-SwW" firstAttribute="top" secondItem="RE7-HX-OvZ" secondAttribute="bottom" id="8bF-oo-VvG"/>
@@ -307,6 +308,9 @@
                             <constraint firstItem="FEU-xi-JID" firstAttribute="top" secondItem="4WT-8X-SwW" secondAttribute="bottom" id="uaX-44-iPm"/>
                             <constraint firstAttribute="trailingMargin" secondItem="RE7-HX-OvZ" secondAttribute="trailing" constant="28" id="wq0-cv-3W1"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="aBd-7O-nOz" appends="YES" id="zLg-T6-CYh"/>
+                        </connections>
                     </view>
                     <connections>
                         <outlet property="chatTextfield" destination="INc-Zc-8r4" id="NDQ-MN-SxC"/>
@@ -316,6 +320,11 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NGW-xv-GYn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="aBd-7O-nOz">
+                    <connections>
+                        <action selector="backgroundTapped:" destination="rLL-Md-vuN" id="16A-1D-ueH"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1991" y="549"/>
         </scene>

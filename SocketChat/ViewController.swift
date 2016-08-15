@@ -50,7 +50,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             })
         })
     }
-    
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return users.count
     }
@@ -68,7 +68,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         cell.textLabel?.text = users[indexPath.row]["username"] as? String
         cell.detailTextLabel?.text = (users[indexPath.row]["isConnected"] as! Bool) ? "Online" : "Offline"
         cell.detailTextLabel?.textColor = (users[indexPath.row]["isConnected"] as! Bool) ? tealColor : pinkColor
-
+        if indexPath.row % 2 == 0 {
+            cell.backgroundColor = UIColor.lightTextColor()
+        }
         return cell
     }
 

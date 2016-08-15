@@ -6,7 +6,11 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
     @IBOutlet weak var userAlertLabel: UILabel!
     @IBOutlet weak var userTypingLabel: UILabel!
     @IBOutlet weak var tableChatView: UITableView!
-    
+
+    @IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
+        view.endEditing(true)
+    }
+
     var username: String!
     var chatMessages = [[String: AnyObject]]()
     var teal =  UIColor(red: 0.0/255, green: 167.0/255, blue: 155.0/255, alpha: 1.0)
@@ -19,24 +23,24 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
             chatTextfield.resignFirstResponder()
         }
     }
-    
+
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         tableChatView.delegate = self
         tableChatView.dataSource = self
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         self.navigationController!.navigationBar.tintColor = teal
         chatTextfield.delegate = self
         tableChatView.separatorStyle = .None
         userTypingLabel.hidden = true
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(self.handleUserTypingNotification(_:)), name: "userTypingNotification", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ChatViewController.handleUserTypingNotification(_:)), name: "userTypingNotification", object: nil)
     }
-    
+
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
         if(text == "\n") {
             textView.resignFirstResponder()
@@ -44,25 +48,29 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
         }
         return true
     }
-    
+
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        
+
         SocketIOManager.sharedInstance.getChatMessage { (messageInfo) -> Void in
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 self.chatMessages.append(messageInfo)
                 self.tableChatView.reloadData()
+                let numOfSections = self.tableChatView.numberOfSections
+                let numOfRows = self.tableChatView.numberOfRowsInSection(numOfSections-1)
+                let indexPath = NSIndexPath(forRow: numOfRows-1, inSection: numOfSections-1)
+                self.tableChatView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
             })
         }
     }
-    
+
     func tableView(tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
         return chatMessages.count
     }
-    
+
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("chatTextCell", forIndexPath: indexPath) as UITableViewCell
-        
+
         let currentChatMessage = chatMessages[indexPath.row]
         let senderUsername = currentChatMessage["username"] as! String
         let message = currentChatMessage["message"] as! String
@@ -77,47 +85,69 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
             cell.backgroundColor = teal
             cell.textLabel?.textColor = cream
         }
-        
+
         cell.textLabel?.text = message
         cell.detailTextLabel?.text = "by \(senderUsername.uppercaseString) @ \(messageDate)"
         cell.detailTextLabel?.textColor = UIColor.darkGrayColor()
 
         return cell
     }
-    
+
     func textViewShouldBeginEditing(textView: UITextView) -> Bool {
         SocketIOManager.sharedInstance.sendUserStartedTypingMessage(username)
         return true
     }
-    
+
+    func textViewShouldEndEditing(textView: UITextView) -> Bool {
+        SocketIOManager.sharedInstance.sendStopTypingMessage(username)
+        return true
+    }
+
     func handleUserTypingNotification(notification: NSNotification) {
-        if let typingUsersDictionary = notification.object as? [String: AnyObject] {
-            var names = ""
-            var totalTypingUsers = 0
-            for (typingUser, _) in typingUsersDictionary {
-                if typingUser != username {
-                    names = (names == "") ? typingUser : "\(names), \(typingUser)"
-                    totalTypingUsers += 1
+        let usersTyping = notification.object as! [String]
+        if usersTyping.count > 0 {
+            if usersTyping.count > 3 {
+                userTypingLabel.text = "This chat room is busy!"
+                userTypingLabel.hidden = false
+                return
+            }
+
+            var userIsTyping = false
+            for user in 0..<usersTyping.count {
+                if usersTyping[user] == username {
+                   userIsTyping = true
                 }
             }
-            
-            if totalTypingUsers > 0 {
-                let verb = (totalTypingUsers == 1) ? "is" : "are"
-                
-                userTypingLabel.text = "\(names) \(verb) now typing a message..."
-                userTypingLabel.hidden = false
+
+            var verb = ""
+            if userIsTyping {
+                verb = usersTyping.count > 2 ? "are" : "is"
             } else {
-                userTypingLabel.hidden = true
+                verb = usersTyping.count >= 2 ? "are" : "is"
             }
+
+            var names = ""
+            for user in 0..<usersTyping.count {
+                if usersTyping[user] != username {
+                    names += "\(usersTyping[user])"
+                    userTypingLabel.text = "\(names) \(verb) now typing a message..."
+                    userTypingLabel.hidden = false
+                }
+                if user < usersTyping.count-1 && usersTyping[user+1] != username {
+                    names += ", "
+                }
+            }
+        } else {
+            userTypingLabel.hidden = true
         }
     }
-    
+
     func formatJSONDate(date: String) -> String {
         let dateFor: NSDateFormatter = NSDateFormatter()
         dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        
+
         let parsedDate = dateFor.dateFromString(date)
-        
+
         dateFor.dateFormat = "MMM dd', 'yyyy HH:mm:ss"
         dateFor.timeZone = NSTimeZone(name: "UTC")
         let timeStamp = dateFor.stringFromDate(parsedDate!)
