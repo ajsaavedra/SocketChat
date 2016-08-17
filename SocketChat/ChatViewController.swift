@@ -1,6 +1,7 @@
 import UIKit
 
-class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDataSource, UITextViewDelegate, UIGestureRecognizerDelegate  {
+class ChatViewController:  UIViewController, UITableViewDelegate,
+    UITableViewDataSource, UITextViewDelegate, UIGestureRecognizerDelegate  {
 
     @IBOutlet weak var chatTextfield: UITextView!
     @IBOutlet weak var userAlertLabel: UILabel!
@@ -43,13 +44,19 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
 
         setChatRoomObservers()
     }
-    
+
     func setChatRoomObservers() {
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ChatViewController.handleUserTypingNotification(_:)), name: "userTypingNotification", object: nil)
+        NSNotificationCenter.defaultCenter()
+            .addObserver(self, selector: #selector(ChatViewController.handleUserTypingNotification(_:)),
+                         name: "userTypingNotification", object: nil)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ChatViewController.handleUserEnteredChatRoom), name: "userWasConnectedNotification", object: nil)
+        NSNotificationCenter.defaultCenter()
+            .addObserver(self, selector: #selector(ChatViewController.handleUserEnteredChatRoom),
+                         name: "userWasConnectedNotification", object: nil)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ChatViewController.handleUserLeftChatRoom), name: "userWasDisconnectedNotification", object: nil)
+        NSNotificationCenter.defaultCenter()
+            .addObserver(self, selector: #selector(ChatViewController.handleUserLeftChatRoom),
+                         name: "userWasDisconnectedNotification", object: nil)
     }
 
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
@@ -155,13 +162,13 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
 
     func handleUserEnteredChatRoom(notification: NSNotification) {
         let connectedUserInfo = notification.object as! String
-        userAlertLabel.text = "User \(connectedUserInfo.uppercaseString) was just connected!"
+        userAlertLabel.text = "\(connectedUserInfo) was just connected!"
         showBannerLabelAnimated()
     }
 
     func handleUserLeftChatRoom(notification: NSNotification) {
         let disconnectedUsername = notification.object as! String
-        userAlertLabel.text = "User \(disconnectedUsername.uppercaseString) has left."
+        userAlertLabel.text = "\(disconnectedUsername) has left."
         showBannerLabelAnimated()
     }
 

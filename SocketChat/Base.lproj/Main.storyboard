@@ -256,14 +256,6 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="f3b-G4-ML6">
                                 <rect key="frame" x="0.0" y="64" width="600" height="468"/>
                                 <color key="backgroundColor" red="1" green="0.92941176469999998" blue="0.82352941180000006" alpha="1" colorSpace="calibratedRGB"/>
-                                <label key="tableFooterView" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User has logged on" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="4UZ-mu-RTV">
-                                    <rect key="frame" x="0.0" y="72" width="600" height="23"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                    <color key="backgroundColor" red="0.0" green="0.65490196079999996" blue="0.60784313729999995" alpha="1" colorSpace="calibratedRGB"/>
-                                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
-                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                                    <nil key="highlightedColor"/>
-                                </label>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="chatTextCell" textLabel="luf-q9-ZoD" detailTextLabel="hPq-td-ilS" style="IBUITableViewCellStyleSubtitle" id="BCJ-UC-M3k">
                                         <rect key="frame" x="0.0" y="28" width="600" height="44"/>
@@ -291,12 +283,22 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User has logged on" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4UZ-mu-RTV">
+                                <rect key="frame" x="40" y="64" width="520" height="22"/>
+                                <color key="backgroundColor" red="0.8666666666666667" green="0.1803921568627451" blue="0.26666666666666666" alpha="1" colorSpace="calibratedRGB"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="1" green="0.92941176469999998" blue="0.82352941180000006" alpha="1" colorSpace="calibratedRGB"/>
                         <gestureRecognizers/>
                         <constraints>
+                            <constraint firstAttribute="trailingMargin" secondItem="4UZ-mu-RTV" secondAttribute="trailing" constant="20" id="0sD-wt-OUU"/>
                             <constraint firstItem="4WT-8X-SwW" firstAttribute="top" secondItem="RE7-HX-OvZ" secondAttribute="bottom" id="8bF-oo-VvG"/>
                             <constraint firstItem="4WT-8X-SwW" firstAttribute="leading" secondItem="NWW-us-fNu" secondAttribute="leadingMargin" constant="-20" id="AIS-NW-NRA"/>
+                            <constraint firstItem="4UZ-mu-RTV" firstAttribute="top" secondItem="kal-gR-FFI" secondAttribute="bottom" id="G08-0Q-O9q"/>
+                            <constraint firstItem="4UZ-mu-RTV" firstAttribute="leading" secondItem="NWW-us-fNu" secondAttribute="leadingMargin" constant="20" id="Ujq-5O-HF3"/>
                             <constraint firstAttribute="trailingMargin" secondItem="4WT-8X-SwW" secondAttribute="trailing" constant="-20" id="awh-g1-Tts"/>
                             <constraint firstItem="RE7-HX-OvZ" firstAttribute="top" secondItem="f3b-G4-ML6" secondAttribute="bottom" constant="8" id="cuh-O1-wTu"/>
                             <constraint firstItem="f3b-G4-ML6" firstAttribute="top" secondItem="kal-gR-FFI" secondAttribute="bottom" id="d83-ik-ve5"/>
