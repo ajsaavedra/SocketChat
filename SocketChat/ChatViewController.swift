@@ -15,6 +15,7 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
     var chatMessages = [[String: AnyObject]]()
     var teal =  UIColor(red: 0.0/255, green: 167.0/255, blue: 155.0/255, alpha: 1.0)
     var cream = UIColor(red: 255.0/255, green: 237.0/255, blue: 210.0/255, alpha: 2.0)
+    var bannerLabelTimer: NSTimer!
 
     @IBAction func sendChat(sender: UIButton) {
         if chatTextfield.text.characters.count > 0 {
@@ -38,7 +39,17 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
         chatTextfield.delegate = self
         tableChatView.separatorStyle = .None
         userTypingLabel.hidden = true
+        userAlertLabel.hidden = true
+
+        setChatRoomObservers()
+    }
+    
+    func setChatRoomObservers() {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ChatViewController.handleUserTypingNotification(_:)), name: "userTypingNotification", object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ChatViewController.handleUserEnteredChatRoom), name: "userWasConnectedNotification", object: nil)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ChatViewController.handleUserLeftChatRoom), name: "userWasDisconnectedNotification", object: nil)
     }
 
     func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
@@ -139,6 +150,41 @@ class ChatViewController:  UIViewController, UITableViewDelegate, UITableViewDat
             }
         } else {
             userTypingLabel.hidden = true
+        }
+    }
+
+    func handleUserEnteredChatRoom(notification: NSNotification) {
+        let connectedUserInfo = notification.object as! String
+        userAlertLabel.text = "User \(connectedUserInfo.uppercaseString) was just connected!"
+        showBannerLabelAnimated()
+    }
+
+    func handleUserLeftChatRoom(notification: NSNotification) {
+        let disconnectedUsername = notification.object as! String
+        userAlertLabel.text = "User \(disconnectedUsername.uppercaseString) has left."
+        showBannerLabelAnimated()
+    }
+
+    func showBannerLabelAnimated() {
+        UIView.animateWithDuration(0.75, animations: { () -> Void in
+            self.userAlertLabel.hidden = false
+            self.userAlertLabel.alpha = 1.0
+        }) { (finished) -> Void in
+            self.bannerLabelTimer = NSTimer.scheduledTimerWithTimeInterval(2.0, target: self,
+                        selector: #selector(ChatViewController.hideBannerLabel), userInfo: nil, repeats: false)
+        }
+    }
+
+    func hideBannerLabel() {
+        if bannerLabelTimer != nil {
+            bannerLabelTimer.invalidate()
+            bannerLabelTimer = nil
+        }
+
+        UIView.animateWithDuration(0.75, animations: { () -> Void in
+            self.userAlertLabel.hidden = true
+            self.userAlertLabel.alpha = 0.0
+        }) { (finished) -> Void in
         }
     }
 

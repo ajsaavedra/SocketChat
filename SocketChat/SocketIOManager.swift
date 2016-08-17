@@ -18,6 +18,7 @@ class SocketIOManager: NSObject {
 
     func establishConnection() {
         socket.connect()
+        listenForUsersInChatRoom()
     }
 
     func closeConnection() {
@@ -26,10 +27,6 @@ class SocketIOManager: NSObject {
 
     func connectUser(username: String) {
         socket.emit("connectUser", username)
-    }
-
-    func disconnectUser(username: String) {
-        socket.emit("disconnectUser", username)
     }
 
     func getOnlineUsers(completionHandler: (userList: [[String:AnyObject]]!) -> Void) {
@@ -61,6 +58,16 @@ class SocketIOManager: NSObject {
             messageDictionary["date"] = dataArray[2] as! String
 
             completionHandler(messageInfo: messageDictionary)
+        }
+    }
+
+    func listenForUsersInChatRoom() {
+        socket.on("userConnectUpdate") { (dataArray, socketAck) -> Void in
+            NSNotificationCenter.defaultCenter().postNotificationName("userWasConnectedNotification", object: dataArray[0] as! String)
+        }
+
+        socket.on("userExitUpdate") { (dataArray, socketAck) -> Void in
+            NSNotificationCenter.defaultCenter().postNotificationName("userWasDisconnectedNotification", object: dataArray[0] as! String)
         }
     }
 

@@ -5,9 +5,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var user: User?
     var users = [[String: AnyObject]]()
     @IBOutlet var userListTable: UITableView!
+    var connected: Bool = false
 
     @IBAction func logoutUser(sender: UIBarButtonItem) {
-        SocketIOManager.sharedInstance.disconnectUser(user!.username!)
+        SocketIOManager.sharedInstance.closeConnection()
+        connected = false
         user = nil
         self.performSegueWithIdentifier("GotoLogin", sender: self)
     }
@@ -33,9 +35,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if user == nil {
             self.performSegueWithIdentifier("GotoLogin", sender: self)
         } else {
-            SocketIOManager.sharedInstance.connectUser(user!.username!)
+            if !connected {
+                loginUser()
+            }
             getListOfUsers()
         }
+    }
+
+    func loginUser() {
+        SocketIOManager.sharedInstance.connectUser(user!.username!)
+        connected = true
     }
 
     func getListOfUsers() {
