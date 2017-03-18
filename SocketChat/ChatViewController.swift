@@ -8,7 +8,7 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
     @IBOutlet weak var userTypingLabel: UILabel!
     @IBOutlet weak var tableChatView: UITableView!
 
-    @IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
+    @IBAction func backgroundTapped(_ sender: UITapGestureRecognizer) {
         view.endEditing(true)
     }
 
@@ -16,9 +16,9 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
     var chatMessages = [[String: AnyObject]]()
     var teal =  UIColor(red: 0.0/255, green: 167.0/255, blue: 155.0/255, alpha: 1.0)
     var cream = UIColor(red: 255.0/255, green: 237.0/255, blue: 210.0/255, alpha: 2.0)
-    var bannerLabelTimer: NSTimer!
+    var bannerLabelTimer: Timer!
 
-    @IBAction func sendChat(sender: UIButton) {
+    @IBAction func sendChat(_ sender: UIButton) {
         if chatTextfield.text.characters.count > 0 {
             SocketIOManager.sharedInstance.sendMessage(chatTextfield.text!, withUsername: username)
             chatTextfield.text = ""
@@ -26,7 +26,7 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
         }
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         tableChatView.delegate = self
@@ -38,28 +38,28 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
 
         self.navigationController!.navigationBar.tintColor = teal
         chatTextfield.delegate = self
-        tableChatView.separatorStyle = .None
-        userTypingLabel.hidden = true
-        userAlertLabel.hidden = true
+        tableChatView.separatorStyle = .none
+        userTypingLabel.isHidden = true
+        userAlertLabel.isHidden = true
 
         setChatRoomObservers()
     }
 
     func setChatRoomObservers() {
-        NSNotificationCenter.defaultCenter()
+        NotificationCenter.default
             .addObserver(self, selector: #selector(ChatViewController.handleUserTypingNotification(_:)),
-                         name: "userTypingNotification", object: nil)
+                         name: NSNotification.Name(rawValue: "userTypingNotification"), object: nil)
         
-        NSNotificationCenter.defaultCenter()
+        NotificationCenter.default
             .addObserver(self, selector: #selector(ChatViewController.handleUserEnteredChatRoom),
-                         name: "userWasConnectedNotification", object: nil)
+                         name: NSNotification.Name(rawValue: "userWasConnectedNotification"), object: nil)
         
-        NSNotificationCenter.defaultCenter()
+        NotificationCenter.default
             .addObserver(self, selector: #selector(ChatViewController.handleUserLeftChatRoom),
-                         name: "userWasDisconnectedNotification", object: nil)
+                         name: NSNotification.Name(rawValue: "userWasDisconnectedNotification"), object: nil)
     }
 
-    func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if(text == "\n") {
             textView.resignFirstResponder()
             return false
@@ -67,27 +67,27 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
         return true
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
         SocketIOManager.sharedInstance.getChatMessage { (messageInfo) -> Void in
-            dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            DispatchQueue.main.async(execute: { () -> Void in
                 self.chatMessages.append(messageInfo)
                 self.tableChatView.reloadData()
                 let numOfSections = self.tableChatView.numberOfSections
-                let numOfRows = self.tableChatView.numberOfRowsInSection(numOfSections-1)
-                let indexPath = NSIndexPath(forRow: numOfRows-1, inSection: numOfSections-1)
-                self.tableChatView.scrollToRowAtIndexPath(indexPath, atScrollPosition: UITableViewScrollPosition.Middle, animated: true)
+                let numOfRows = self.tableChatView.numberOfRows(inSection: numOfSections-1)
+                let indexPath = IndexPath(row: numOfRows-1, section: numOfSections-1)
+                self.tableChatView.scrollToRow(at: indexPath, at: UITableViewScrollPosition.middle, animated: true)
             })
         }
     }
 
-    func tableView(tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
+    func tableView(_ tableView:UITableView, numberOfRowsInSection section:Int) -> Int {
         return chatMessages.count
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("chatTextCell", forIndexPath: indexPath) as UITableViewCell
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "chatTextCell", for: indexPath) as UITableViewCell
 
         let currentChatMessage = chatMessages[indexPath.row]
         let senderUsername = currentChatMessage["username"] as! String
@@ -95,8 +95,8 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
         let messageDate = formatJSONDate(currentChatMessage["date"] as! String)
 
         if senderUsername == username {
-            cell.textLabel?.textAlignment = NSTextAlignment.Right
-            cell.detailTextLabel?.textAlignment = NSTextAlignment.Right
+            cell.textLabel?.textAlignment = NSTextAlignment.right
+            cell.detailTextLabel?.textAlignment = NSTextAlignment.right
             cell.textLabel?.textColor = teal
             cell.backgroundColor = cream
         } else {
@@ -105,28 +105,28 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
         }
 
         cell.textLabel?.text = message
-        cell.detailTextLabel?.text = "by \(senderUsername.uppercaseString) @ \(messageDate)"
-        cell.detailTextLabel?.textColor = UIColor.darkGrayColor()
+        cell.detailTextLabel?.text = "by \(senderUsername.uppercased()) @ \(messageDate)"
+        cell.detailTextLabel?.textColor = UIColor.darkGray
 
         return cell
     }
 
-    func textViewShouldBeginEditing(textView: UITextView) -> Bool {
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         SocketIOManager.sharedInstance.sendUserStartedTypingMessage(username)
         return true
     }
 
-    func textViewShouldEndEditing(textView: UITextView) -> Bool {
+    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
         SocketIOManager.sharedInstance.sendStopTypingMessage(username)
         return true
     }
 
-    func handleUserTypingNotification(notification: NSNotification) {
+    func handleUserTypingNotification(_ notification: Notification) {
         let usersTyping = notification.object as! [String]
         if usersTyping.count > 0 {
             if usersTyping.count > 3 {
                 userTypingLabel.text = "This chat room is busy!"
-                userTypingLabel.hidden = false
+                userTypingLabel.isHidden = false
                 return
             }
 
@@ -149,37 +149,37 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
                 if usersTyping[user] != username {
                     names += "\(usersTyping[user])"
                     userTypingLabel.text = "\(names) \(verb) now typing a message..."
-                    userTypingLabel.hidden = false
+                    userTypingLabel.isHidden = false
                 }
                 if user < usersTyping.count-1 && usersTyping[user+1] != username {
                     names += ", "
                 }
             }
         } else {
-            userTypingLabel.hidden = true
+            userTypingLabel.isHidden = true
         }
     }
 
-    func handleUserEnteredChatRoom(notification: NSNotification) {
+    func handleUserEnteredChatRoom(_ notification: Notification) {
         let connectedUserInfo = notification.object as! String
         userAlertLabel.text = "\(connectedUserInfo) was just connected!"
         showBannerLabelAnimated()
     }
 
-    func handleUserLeftChatRoom(notification: NSNotification) {
+    func handleUserLeftChatRoom(_ notification: Notification) {
         let disconnectedUsername = notification.object as! String
         userAlertLabel.text = "\(disconnectedUsername) has left."
         showBannerLabelAnimated()
     }
 
     func showBannerLabelAnimated() {
-        UIView.animateWithDuration(0.75, animations: { () -> Void in
-            self.userAlertLabel.hidden = false
+        UIView.animate(withDuration: 0.75, animations: { () -> Void in
+            self.userAlertLabel.isHidden = false
             self.userAlertLabel.alpha = 1.0
-        }) { (finished) -> Void in
-            self.bannerLabelTimer = NSTimer.scheduledTimerWithTimeInterval(2.0, target: self,
+        }, completion: { (finished) -> Void in
+            self.bannerLabelTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self,
                         selector: #selector(ChatViewController.hideBannerLabel), userInfo: nil, repeats: false)
-        }
+        }) 
     }
 
     func hideBannerLabel() {
@@ -188,22 +188,22 @@ class ChatViewController:  UIViewController, UITableViewDelegate,
             bannerLabelTimer = nil
         }
 
-        UIView.animateWithDuration(0.75, animations: { () -> Void in
-            self.userAlertLabel.hidden = true
+        UIView.animate(withDuration: 0.75, animations: { () -> Void in
+            self.userAlertLabel.isHidden = true
             self.userAlertLabel.alpha = 0.0
-        }) { (finished) -> Void in
-        }
+        }, completion: { (finished) -> Void in
+        }) 
     }
 
-    func formatJSONDate(date: String) -> String {
-        let dateFor: NSDateFormatter = NSDateFormatter()
+    func formatJSONDate(_ date: String) -> String {
+        let dateFor: DateFormatter = DateFormatter()
         dateFor.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
 
-        let parsedDate = dateFor.dateFromString(date)
+        let parsedDate = dateFor.date(from: date)
 
         dateFor.dateFormat = "MMM dd', 'yyyy HH:mm:ss"
-        dateFor.timeZone = NSTimeZone(name: "UTC")
-        let timeStamp = dateFor.stringFromDate(parsedDate!)
+        dateFor.timeZone = TimeZone(identifier: "UTC")
+        let timeStamp = dateFor.string(from: parsedDate!)
         return timeStamp
     }
 }

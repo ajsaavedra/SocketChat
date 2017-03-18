@@ -7,10 +7,11 @@
 //
 
 import UIKit
+import SocketIO
 
 class SocketIOManager: NSObject {
     static let sharedInstance = SocketIOManager()
-    var socket: SocketIOClient = SocketIOClient(socketURL: NSURL(string: "http://localhost:3000")!)
+    var socket: SocketIOClient = SocketIOClient(socketURL: URL(string: "http://localhost:3000")!)
 
     override init() {
         super.init()
@@ -25,11 +26,11 @@ class SocketIOManager: NSObject {
         socket.disconnect()
     }
 
-    func connectUser(username: String) {
+    func connectUser(_ username: String) {
         socket.emit("connectUser", username)
     }
 
-    func getOnlineUsers(completionHandler: (userList: [[String:AnyObject]]!) -> Void) {
+    func getOnlineUsers(_ completionHandler: @escaping (_ userList: [[String:AnyObject]]?) -> Void) {
         socket.emit("connectedUsers")
         socket.on("connectedUsers") { (dataArray, ack) -> Void in
             var users = [[String: AnyObject]]()
@@ -37,53 +38,53 @@ class SocketIOManager: NSObject {
             let onlineUsers = dataArray[0] as! [AnyObject]
 
             for user in 0..<onlineUsers.count {
-                newEntry["username"] = onlineUsers[user]["username"] as! String
-                newEntry["isConnected"] = onlineUsers[user]["isConnected"] as! Bool
+                newEntry["username"] = onlineUsers[user]["username"] as AnyObject?
+                newEntry["isConnected"] = onlineUsers[user]["isConnected"] as AnyObject?
                 users.append(newEntry)
             }
 
-            completionHandler(userList: users)
+            completionHandler(users)
         }
     }
 
-    func sendMessage(message: String, withUsername username: String) {
+    func sendMessage(_ message: String, withUsername username: String) {
         socket.emit("chat message", message, username)
     }
 
-    func getChatMessage(completionHandler: (messageInfo:[String: AnyObject]) -> Void) {
+    func getChatMessage(_ completionHandler: @escaping (_ messageInfo:[String: AnyObject]) -> Void) {
         socket.on("chat message") { (dataArray, socketAck) -> Void in
             var messageDictionary = [String: AnyObject]()
-            messageDictionary["message"] = dataArray[0] as! String
-            messageDictionary["username"] = dataArray[1] as! String
-            messageDictionary["date"] = dataArray[2] as! String
+            messageDictionary["message"] = dataArray[0] as AnyObject?
+            messageDictionary["username"] = dataArray[1] as AnyObject?
+            messageDictionary["date"] = dataArray[2] as AnyObject?
 
-            completionHandler(messageInfo: messageDictionary)
+            completionHandler(messageDictionary)
         }
     }
 
     func listenForUsersInChatRoom() {
         socket.on("userConnectUpdate") { (dataArray, socketAck) -> Void in
-            NSNotificationCenter.defaultCenter().postNotificationName("userWasConnectedNotification", object: dataArray[0] as! String)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "userWasConnectedNotification"), object: dataArray[0] as! String)
         }
 
         socket.on("userExitUpdate") { (dataArray, socketAck) -> Void in
-            NSNotificationCenter.defaultCenter().postNotificationName("userWasDisconnectedNotification", object: dataArray[0] as! String)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "userWasDisconnectedNotification"), object: dataArray[0] as! String)
         }
     }
 
     func listenForOtherMessages() {
         socket.on("userTypingUpdate") { (data, socketAck) -> Void in
             let usersTyping = data as NSArray
-            NSNotificationCenter.defaultCenter().postNotificationName("userTypingNotification", object: usersTyping[0] as? [String])
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "userTypingNotification"), object: usersTyping[0] as? [String])
         }
     }
 
-    func sendUserStartedTypingMessage(username: String) {
+    func sendUserStartedTypingMessage(_ username: String) {
         socket.emit("startType", username)
         listenForOtherMessages()
     }
     
-    func sendStopTypingMessage(username: String) {
+    func sendStopTypingMessage(_ username: String) {
         socket.emit("stopType", username)
         listenForOtherMessages()
     }

@@ -6,11 +6,11 @@ class SignUpController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var password: UITextField!
     @IBOutlet weak var passwordConfirmation: UITextField!
 
-    @IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
+    @IBAction func backgroundTapped(_ sender: UITapGestureRecognizer) {
         view.endEditing(true)
     }
 
-    @IBAction func signUp(sender: UIButton) {
+    @IBAction func signUp(_ sender: UIButton) {
         let name = userName.text!
         let pw = password.text!
         let pwc = passwordConfirmation.text!
@@ -28,24 +28,24 @@ class SignUpController: UIViewController, UITextFieldDelegate {
             if data["Error"] != nil {
                 self.displayAlertMessage(data["Error"] as! String)
             } else {
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.dismiss(animated: true, completion: nil)
             }
         }
     }
 
-    func displayAlertMessage(message: String) {
+    func displayAlertMessage(_ message: String) {
         let alertController = UIAlertController(title: "Oops!", message: message,
-                                                preferredStyle: UIAlertControllerStyle.Alert)
-        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
+                                                preferredStyle: UIAlertControllerStyle.alert)
+        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil)
         alertController.addAction(okAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
 
-    @IBAction func dismissView(sender: UIButton) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func dismissView(_ sender: UIButton) {
+        self.dismiss(animated: true, completion: nil)
     }
 
-    func textFieldShouldReturn(textfield: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textfield: UITextField) -> Bool {
         textfield.resignFirstResponder()
         return true
     }

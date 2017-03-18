@@ -1,7 +1,7 @@
 class User {
     var username: String?
     
-    func nameUser(name: String) {
+    func nameUser(_ name: String) {
         self.username = name
     }
 }

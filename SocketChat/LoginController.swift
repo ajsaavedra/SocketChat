@@ -10,11 +10,11 @@ class LoginController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var userName: UITextField!
     @IBOutlet weak var password: UITextField!
 
-    @IBAction func backgroundTapped(sender: UITapGestureRecognizer) {
+    @IBAction func backgroundTapped(_ sender: UITapGestureRecognizer) {
         view.endEditing(true)
     }
 
-    @IBAction func loginButton(sender: UIButton) {
+    @IBAction func loginButton(_ sender: UIButton) {
         username = userName.text!
         pw = password.text!
 
@@ -26,18 +26,18 @@ class LoginController: UIViewController, UITextFieldDelegate {
         }
     }
 
-    @IBAction func loginWithTwitterButton(sender: UIButton) {
+    @IBAction func loginWithTwitterButton(_ sender: UIButton) {
     }
 
-    @IBAction func forgotPassword(sender: UIButton) {
+    @IBAction func forgotPassword(_ sender: UIButton) {
     }
 
-    func displayAlertMessage(message: String) {
+    func displayAlertMessage(_ message: String) {
         let alertController = UIAlertController(title: "Oops!", message: message,
-                                                preferredStyle: .Alert)
-        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil)
+                                                preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil)
         alertController.addAction(okAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
 
     func loginUser() {
@@ -46,12 +46,12 @@ class LoginController: UIViewController, UITextFieldDelegate {
             if userData["Error"] != nil {
                 self.displayAlertMessage(userData["Error"] as! String)
             } else {
-                let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                let appDelegate = UIApplication.shared.delegate as! AppDelegate
                 appDelegate.viewController!.user = User()
                 appDelegate.viewController!.user?.nameUser(self.userName.text!)
 
                 SocketIOManager.sharedInstance.establishConnection()
-                self.dismissViewControllerAnimated(true, completion: nil)
+                self.dismiss(animated: true, completion: nil)
             }
         }
     }
@@ -68,7 +68,7 @@ class LoginController: UIViewController, UITextFieldDelegate {
         super.didReceiveMemoryWarning()
     }
 
-    func textFieldShouldReturn(textfield: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textfield: UITextField) -> Bool {
         textfield.resignFirstResponder()
         return true
     }

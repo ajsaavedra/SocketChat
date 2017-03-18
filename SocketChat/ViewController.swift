@@ -7,11 +7,11 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var userListTable: UITableView!
     var connected: Bool = false
 
-    @IBAction func logoutUser(sender: UIBarButtonItem) {
+    @IBAction func logoutUser(_ sender: UIBarButtonItem) {
         SocketIOManager.sharedInstance.closeConnection()
         connected = false
         user = nil
-        self.performSegueWithIdentifier("GotoLogin", sender: self)
+        self.performSegue(withIdentifier: "GotoLogin", sender: self)
     }
 
     override func viewDidLoad() {
@@ -24,16 +24,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         // Dispose of any resources that can be recreated.
     }
 
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        userListTable.separatorStyle = .None
+        userListTable.separatorStyle = .none
         userListTable.reloadData()
     }
 
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         if user == nil {
-            self.performSegueWithIdentifier("GotoLogin", sender: self)
+            self.performSegue(withIdentifier: "GotoLogin", sender: self)
         } else {
             if !connected {
                 loginUser()
@@ -50,42 +50,42 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func getListOfUsers() {
         SocketIOManager.sharedInstance.getOnlineUsers(
             { (userList) -> Void in
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                 if userList != nil {
-                    self.users = userList
+                    self.users = userList!
                     self.userListTable.reloadData()
-                    self.userListTable.hidden = false
+                    self.userListTable.isHidden = false
                 }
             })
         })
     }
 
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return users.count
     }
 
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
 
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let tealColor: UIColor = UIColor(red: 0.0/255, green: 167.0/255, blue: 155.0/255, alpha: 1.0)
         let pinkColor: UIColor = UIColor(red: 247.0/255, green: 150.0/255, blue: 179.0/255, alpha: 1.0)
 
-        let cell = tableView.dequeueReusableCellWithIdentifier("ChatUser", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ChatUser", for: indexPath)
 
         cell.textLabel?.text = users[indexPath.row]["username"] as? String
         cell.detailTextLabel?.text = (users[indexPath.row]["isConnected"] as! Bool) ? "Online" : "Offline"
         cell.detailTextLabel?.textColor = (users[indexPath.row]["isConnected"] as! Bool) ? tealColor : pinkColor
         if indexPath.row % 2 == 0 {
-            cell.backgroundColor = UIColor.lightTextColor()
+            cell.backgroundColor = UIColor.lightText
         }
         return cell
     }
 
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ChatRoom" {
-            let chatView = segue.destinationViewController as! ChatViewController
+            let chatView = segue.destination as! ChatViewController
             chatView.username = user?.username
         } else {
             if user != nil {

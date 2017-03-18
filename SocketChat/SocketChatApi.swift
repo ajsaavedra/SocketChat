@@ -1,4 +1,4 @@
-import Foundation
+         import Foundation
 import Alamofire
 
 enum Method: String {
@@ -9,40 +9,40 @@ enum Method: String {
 class SocketChatAPI {
     let baseURLString = "http://localhost:3000/api/";
 
-    func makeCall(username: String, password: String, completionHandler: (NSDictionary?, NSError?) -> ()) {
+    func makeCall(_ username: String, password: String, completionHandler: @escaping (NSDictionary?, NSError?) -> ()) {
         checkUser(username, password: password, completionHandler: completionHandler)
     }
 
-    func makeCallToRegister(username: String, password: String,
-                            confirmation: String, completionHandler: (NSDictionary?, NSError?) -> ()) {
+    func makeCallToRegister(_ username: String, password: String,
+                            confirmation: String, completionHandler: @escaping (NSDictionary?, NSError?) -> ()) {
         registerUser(username, password: password, confirmation: confirmation, completionHandler: completionHandler)
     }
 
-    func checkUser(username: String, password: String, completionHandler: (NSDictionary?, NSError?) -> ()) {
+    func checkUser(_ username: String, password: String, completionHandler: @escaping (NSDictionary?, NSError?) -> ()) {
         let url = baseURLString + Method.CheckUser.rawValue
-        Alamofire.request(.POST, url,
-            parameters: ["username":username, "password": password], encoding: .JSON)
+        Alamofire.request(url, method: .post,
+            parameters: ["username":username, "password": password], encoding: JSONEncoding.default)
             .responseJSON { response in
                 switch response.result {
-                case .Success(let value):
+                case .success(let value):
                     completionHandler(value as? NSDictionary, nil)
-                case .Failure(let error):
-                    completionHandler(nil, error)
+                case .failure(let error):
+                    completionHandler(nil, error as NSError)
                 }
         }
     }
 
-    func registerUser(username: String, password: String,
-                      confirmation: String, completionHandler: (NSDictionary?, NSError?) -> ()) {
+    func registerUser(_ username: String, password: String,
+                      confirmation: String, completionHandler: @escaping (NSDictionary?, NSError?) -> ()) {
         let url = baseURLString + Method.RegisterUser.rawValue
-        Alamofire.request(.POST, url,
-            parameters: ["username":username, "password": password, "confirmation": confirmation], encoding: .JSON)
+        Alamofire.request(url, method: .post,
+            parameters: ["username":username, "password": password, "confirmation": confirmation], encoding: JSONEncoding.default)
             .responseJSON { response in
                 switch response.result {
-                case .Success(let value):
+                case .success(let value):
                     completionHandler(value as? NSDictionary, nil)
-                case .Failure(let error):
-                    completionHandler(nil, error)
+                case .failure(let error):
+                    completionHandler(nil, error as NSError)
                 }
         }
     }
